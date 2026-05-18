@@ -1,0 +1,71 @@
+package com.project.dao;
+
+import java.sql.*;
+import com.project.db.DBConnection;
+
+public class UserDAO {
+
+    // ✅ LOGIN CHECK
+    public static boolean validateUser(String username, String password) {
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "SELECT * FROM users WHERE username=? AND password=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // ✅ GET BALANCE
+    public static double getBalance(String username) {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "SELECT balance FROM users WHERE username=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble("balance");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // ✅ ADD MONEY
+    public static void addMoney(String username, double amount) {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "UPDATE users SET balance = balance + ? WHERE username=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setDouble(1, amount);
+            ps.setString(2, username);
+
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
